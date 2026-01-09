@@ -1,19 +1,21 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ESNext",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "target": "ES2024",
+    "target": "ESNext",
     "strictNullChecks": true,
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": "./",
     "skipLibCheck": true,
-    "incremental": true
+    "incremental": true,
+    "moduleResolution": "bundler",
+    "types":["bun-types"]
   }
 }
