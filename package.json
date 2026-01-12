@@ -33,6 +33,7 @@
     "@nestjs/schematics": "^11.0.9",
     "@okee-tech/eslint-plugin-neverthrow": "^1.0.14",
     "@types/node": "^25.0.3",
+    "bun-types": "^1.3.5",
     "typescript": "^5.9.3"
   }
 }
