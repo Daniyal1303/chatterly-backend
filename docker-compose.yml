@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:18-alpine # Official image (Alpine is smaller and faster)
+    container_name: chatterly_db
+    restart: always
+    environment:
+      # Creates the initial database name
+      POSTGRES_DB: chatterly
+      # The default superuser name
+      POSTGRES_USER: postgres
+      # The password you requested
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432" # Maps container port to your machine
+    volumes:
+      - chatterly_data:/var/lib/postgresql/data
+
+volumes:
+  chatterly_data:
