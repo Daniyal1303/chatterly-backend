@@ -1,32 +1,36 @@
-# Use the official Bun image
-FROM oven/bun:1.1 as base
-WORKDIR /app
+# 1. Build Stage
+FROM oven/bun:1.1-debian AS base
+WORKDIR /usr/src/app
 
-# 1. Install dependencies
-COPY package.json bun.lockb ./
+# Install dependencies
+COPY package.json bun.lock* ./
 RUN bun install
 
-# 2. Copy the rest of your code
+# Copy source and Prisma schema
 COPY . .
 
-# 3. Generate Prisma Client
+# Generate Prisma Client (crucial for types)
 RUN bunx prisma generate
 
-# 4. Build the NestJS app
+# Build the NestJS app
 RUN bun run build
 
-# 5. Final Stage (lighter image)
+# 2. Final Production Stage (Lighter)
 FROM oven/bun:1.1-slim
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy only what we need from the base stage
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/package.json ./
-COPY --from=base /app/prisma ./prisma
+# Copy only the necessary files from the 'base' stage
+COPY --from=base /usr/src/app/node_modules ./node_modules
+COPY --from=base /usr/src/app/dist ./dist
+COPY --from=base /usr/src/app/package.json ./
+COPY --from=base /usr/src/app/prisma ./prisma
 
-# Expose port 3000 for the NestJS app
-EXPOSE 3001
+# CRITICAL: Copy the custom generated Prisma client!
+# Since you used output = "../generated/prisma", it lives here:
+COPY --from=base /usr/src/app/generated ./generated
+
+# Match your NestJS port (Internal container port)
+EXPOSE 3003
 
 # Start command: Run migrations then start the server
-CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/main.js"]
+CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/src/main.js"]

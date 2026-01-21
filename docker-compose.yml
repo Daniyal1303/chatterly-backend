@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   db:
-    image: postgres:18-alpine # Official image (Alpine is smaller and faster)
+    image: postgres:15-alpine # Official image (Alpine is smaller and faster)
     container_name: chatterly_db
     restart: always
     environment:
@@ -13,9 +13,20 @@ services:
       # The password you requested
       POSTGRES_PASSWORD: 1234
     ports:
-      - "5432:5432" # Maps container port to your machine
+      - "5433:5432" # Maps container port to your machine
     volumes:
       - chatterly_data:/var/lib/postgresql/data
+  app:
+    build: .
+    container_name: chatterly_app
+    restart: always
+    ports:
+      - "3003:3003"
+    environment:
+      # CRITICAL: Use 'db' (service name) as the hostname, not localhost
+      DATABASE_URL: "postgresql://postgres:1234@db:5432/chatterly?schema=public"
+    depends_on:
+      - db    
 
 volumes:
   chatterly_data:
